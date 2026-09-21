@@ -1,0 +1,10 @@
+authtoken: 3JcgCc1bAIozTj2Xa3YyrX7btHa_5FHpuwUhWcs2yavP1Gmuj
+version: "2"
+region: ap
+tunnels:
+  ssh:
+    proto: tcp
+    addr: 22
+  web:
+    proto: http
+    addr: 8080
