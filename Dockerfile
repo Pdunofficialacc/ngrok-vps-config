@@ -23,7 +23,7 @@ RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
     apt-get update && apt-get install -y ngrok && \
     rm -rf /var/lib/apt/lists/*
 
-# Ngrok config
+# Ngrok config - updated token
 RUN mkdir -p /root/.config/ngrok && \
     printf 'version: "2"\nauthtoken: 3JrmUD5GguXzQxmT5a1kEXiaH9d_2P1U39YmSA5VY4gzQZsZz\nregion: ap\ntunnels:\n  ssh:\n    proto: tcp\n    addr: 22\n' \
     > /root/.config/ngrok/ngrok.yml
