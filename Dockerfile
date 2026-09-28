@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    openssh-server curl unzip python3 netcat-openbsd jq \
+    openssh-server curl wget python3 jq \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /run/sshd
@@ -15,18 +15,13 @@ RUN echo 'root:dev' | chpasswd
 RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
-# Ngrok install
-RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
-    tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && \
-    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | \
-    tee /etc/apt/sources.list.d/ngrok.list && \
-    apt-get update && apt-get install -y ngrok && \
-    rm -rf /var/lib/apt/lists/*
+# Cloudflared install (fixed TCP tunnel — no time limit)
+RUN wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && \
+    dpkg -i cloudflared-linux-amd64.deb && \
+    rm cloudflared-linux-amd64.deb
 
-# Ngrok config — SSH random port + Web tunnel
-RUN mkdir -p /root/.config/ngrok && \
-    printf 'version: "2"\nauthtoken: 3Jrwa91Fa0w4BpqnWdIAr2TNfFB_4G4vnYDy2oFkdoRMBtQUb\nregion: ap\ntunnels:\n  ssh:\n    proto: tcp\n    addr: 22\n  web:\n    proto: http\n    addr: 8080\n' \
-    > /root/.config/ngrok/ngrok.yml
+# Create config directory
+RUN mkdir -p /root/.cloudflared
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
