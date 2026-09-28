@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    openssh-server curl unzip python3 netcat-openbsd \
+    openssh-server curl unzip python3 netcat-openbsd jq \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /run/sshd
@@ -23,9 +23,9 @@ RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
     apt-get update && apt-get install -y ngrok && \
     rm -rf /var/lib/apt/lists/*
 
-# Ngrok config - updated token
+# Ngrok config — SSH random port + Web tunnel
 RUN mkdir -p /root/.config/ngrok && \
-    printf 'version: "2"\nauthtoken: 3Jrwa91Fa0w4BpqnWdIAr2TNfFB_4G4vnYDy2oFkdoRMBtQUb\nregion: ap\ntunnels:\n  ssh:\n    proto: tcp\n    addr: 22\n' \
+    printf 'version: "2"\nauthtoken: 3Jrwa91Fa0w4BpqnWdIAr2TNfFB_4G4vnYDy2oFkdoRMBtQUb\nregion: ap\ntunnels:\n  ssh:\n    proto: tcp\n    addr: 22\n  web:\n    proto: http\n    addr: 8080\n' \
     > /root/.config/ngrok/ngrok.yml
 
 COPY start.sh /start.sh
